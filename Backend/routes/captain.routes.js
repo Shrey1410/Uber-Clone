@@ -18,6 +18,4 @@ module.exports = (app) => {
     ], captain_controllers.login)
 
     app.post("/captain/logout", [auth_middleware.checkcaptainlogin], captain_controllers.logout)
-
-    app.get("/captain/proflie", [auth_middleware.checkcaptainlogin], captain_controllers.getprofile)
 }

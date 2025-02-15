@@ -2,48 +2,64 @@ import React, { useState, useEffect, useContext } from "react";
 import Navbar from "./Navbar";
 import { SocketContext } from "../context/SocketContext";
 import { useNavigate } from "react-router-dom";
+import axios from 'axios'
+import { toast } from "react-toastify";
 
 function Ridepopup() {
-  const [rides, setRiderequest] = useState([
-    {
-      user : "Shrey Chamoli",
-      pickup: 'Meerut, Uttar Pradesh, India',
-      destination: 'Delhi, India',
-      vehicle : 'Car',
-      fare: 1498.99,
-      status: 'pending'
-    }]);
+  const [ride, setRiderequest] = useState(null);
   const { socket } = useContext(SocketContext);
-  const navigate = useNavigate();
+  const Navigate = useNavigate();
 
-  useEffect(() => {
-    socket.on("new-ride", (data) => {
-      setRiderequest((prevRides) => [...prevRides, data[0]]);
-    });
-
-    return () => {
-      socket.off("new-ride");
-    };
-  }, [socket]);
+  socket.on("new-ride", (data) => {
+    console.log(data)
+    setRiderequest(data);
+  });
 
   const onDecline = (rideId) => {
-    console.log(`Ride declined: ${rideId}`);
-    setRiderequest((prevRides) => prevRides.filter((ride) => ride.id !== rideId));
+    setRiderequest(null);
   };
 
-  const onSubmit = (rideId) => {
-    console.log(`Ride accepted: ${rideId}`);
-    navigate("/onacceptride");
-  };
+  const handleOnaccept = async (e)=>{
+    e.preventDefault()
+    try{
+    const res = await axios.post('http://localhost:8000/ride/confirm', {
+      rideId : ride[0]._id
+    }, {
+      withCredentials: true,
+    })
+      Navigate('/onacceptride' , { state: { ride: ride } })
+      toast.success(`Ride Confirmed Successfully!`, {
+        position: 'top-right',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'colored',
+      });
+    }
+    catch(error){
+      console.log(error)
+      toast.error(`${error.response.data.message}`, {
+        position: 'top-right',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'colored',
+      });
+    }
+    }
 
   return (
     <div>
       <Navbar />
       <div className="p-6">
-        {rides.length > 0 ? (
-          rides.map((ride, index) => (
+        {ride ? (
             <div
-              key={ride.id || index}
               className="group relative cursor-pointer overflow-hidden bg-white px-6 pt-10 pb-8 shadow-xl ring-1 ring-gray-900/5 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl sm:mx-auto sm:max-w-sm sm:rounded-lg sm:px-10 my-4"
             >
               <div className="relative flex justify-center items-center">
@@ -70,30 +86,30 @@ function Ridepopup() {
                   New ride request received!
                 </p>
                 <div className="space-y-2 flex flex-col items-center justify-center">
-                  <p className="font-bold text-black group-hover:text-white">
-                    User: {ride.user}
+                  <p className="font-bold text-black group-hover:text-white capitalize">
+                    User: {ride[0].userId[0].fullname.firstname} {ride[0].userId[0].fullname.lastname}
+                  </p>
+                  <p className="font-bold text-black group-hover:text-white capitalize">
+                    Vehicle: {ride[0].vechileType}
                   </p>
                   <p className="font-bold text-black group-hover:text-white">
-                    Vehicle: {ride.vehicle}
-                  </p>
-                  <p className="font-bold text-black group-hover:text-white">
-                    Pickup: {ride.pickup}
+                    Pickup: {ride[0].pickup}
                   </p>
                   <p className="font-semibold group-hover:text-white">to</p>
                   <p className="font-bold text-black group-hover:text-white">
-                    Destination: {ride.destination}
+                    Destination: {ride[0].destination}
                   </p>
                   <p className="font-bold text-black group-hover:text-white">
-                    Fare: {ride.fare}
+                    Fare: {ride[0].fare}
                   </p>
-                  <p className="font-bold text-black group-hover:text-white">
-                    Status: {ride.status}
+                  <p className="font-bold text-black group-hover:text-white capitalize">
+                    Status: {ride[0].status}
                   </p>
                 </div>
                 <div className="mt-4 flex justify-center space-x-4">
                   <button
                     className="transition-all duration-300 group-hover:text-black group-hover:bg-white bg-black text-white py-1 px-4 rounded-xl"
-                    onClick={() => onSubmit(ride.id)}
+                    onClick={handleOnaccept}
                   >
                     Accept
                   </button>
@@ -106,7 +122,6 @@ function Ridepopup() {
                 </div>
               </div>
             </div>
-          ))
         ) : (
           <div className="relative min-h-60 w-full flex flex-col justify-center items-center my-6 shadow-sm border border-slate-200 rounded-lg p-4 bg-slate-200">
             <div className="p-3 text-center">

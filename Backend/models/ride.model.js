@@ -13,6 +13,11 @@ const rideSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    vechileType : {
+        type : String,
+        enum : ["car", "auto", "motorcycle"],
+        required : true,
+    },
     destination: {
         type: String,
         required: true
@@ -46,8 +51,6 @@ const rideSchema = new mongoose.Schema({
         select : false,
         required : true
     }
-}, {
-    timestamps: true
-});
+},{timestamps : true,  __v :false});
 
 module.exports = mongoose.model('Ride', rideSchema);

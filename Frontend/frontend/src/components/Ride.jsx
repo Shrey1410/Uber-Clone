@@ -30,9 +30,6 @@ const Ride = ()=>{
       socket.emit("join", { userType : "user", userId : user._id})
     }
   }, [user]);
-  socket.on('confirm-ride', (data)=>{
-    console.log(data)
-  })
   const handleOnSubmit = async ()=>{
     let res
     try{

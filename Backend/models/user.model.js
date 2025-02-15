@@ -24,6 +24,6 @@ const user_schema = mongoose.Schema({
     socketId : {
         type : String,
     } 
-})
+},{timestamps : true,  __v :false})
 
 module.exports = mongoose.model("User", user_schema)

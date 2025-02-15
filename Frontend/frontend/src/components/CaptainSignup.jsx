@@ -15,6 +15,7 @@ const CaptainSignup = () => {
   const [capacity, setcapacity] = useState(0)
   const [vtype, setvtype] = useState('')
   const {captain, setCaptain} = useContext(CaptainDataContext)
+
   const onSubmit = async (e)=>{
     e.preventDefault()
     const obj = {
@@ -44,7 +45,7 @@ const CaptainSignup = () => {
     setcapacity(0)
     setvtype('')
     setCaptain(res.data[0])
-    const expiretime = new Date().getTime() + 1*60*60*1000;
+    const expiretime = new Date().getTime() + 10*24*60*60*1000;
     localStorage.setItem('captain',JSON.stringify({
       ...res.data[0],
       expire : expiretime
@@ -170,7 +171,7 @@ const CaptainSignup = () => {
                             }}
                           />
                           <select
-                            className="bg-slate-200 p-3 my-4 rounded-xl w-full text-gray-400"
+                            className="bg-slate-200 p-3 my-4 rounded-xl w-full"
                             value={vtype}
                             onChange={(e)=>{
                               e.preventDefault()

@@ -2,6 +2,7 @@ const auth_middleware = require("../middlewares/auth.middleware");
 const { body } = require("express-validator");
 const maps_controllers = require("../controllers/map.controller");
 const {query} = require('express-validator')
+
 module.exports = (app) => {
     app.get("/map/get-coordinates", [auth_middleware.checkuserlogin,
         query('address').isString().isLength({min : 3}).withMessage('Address must be provided')

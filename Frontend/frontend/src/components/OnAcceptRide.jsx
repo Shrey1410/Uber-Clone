@@ -1,35 +1,51 @@
 import React, { useState, useEffect, useContext } from "react";
 import Navbar from "./Navbar";
 import { SocketContext } from "../context/SocketContext";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import axios from 'axios'
+import { toast } from "react-toastify";
 function OnAcceptRide() {
-  const [rides, setRiderequest] = useState([]);
-  const [isride, setisride] = useState(false);
-  const { socket } = useContext(SocketContext);
   const Navigate = useNavigate()
-  // Listen for new ride events
-  useEffect(() => {
-    socket.on("new-ride", (data) => {
-      setisride(true);
-      setRiderequest((prevRides) => [...prevRides, data[0]]);
+  const [otp, setOtp] = useState("")
+  const location = useLocation();
+  const ride = location.state?.ride
+
+  const onSubmit = async (e) => {
+    e.preventDefault()
+    try{
+    const res = await axios.post('http://localhost:8000/ride/start', {
+      rideId : ride[0]._id,
+      otp : otp
+    }, {
+      withCredentials: true,
+    })
+    Navigate('/startride', {
+      state : { ride : ride }
+    })
+    toast.success(`Ride Started Successfully!`, {
+      position: 'top-right',
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: 'colored',
     });
-
-    // Cleanup socket listener
-    return () => {
-      socket.off("new-ride");
-    };
-  }, [socket]);
-
-  // Manage `isride` state when rides are empty
-  useEffect(() => {
-    if (rides.length === 0) {
-      setisride(false);
-    }
-  }, [rides]);
-
-  const onSubmit = (e) => {
-    console.log("Ride accepted");
-    Navigate('/startride')
+  }
+  catch(error){
+    console.log(error);
+    toast.error(`${error.response.data.message}`, {
+      position: 'top-right',
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: 'colored',
+    });
+  }
   };
 
   return (
@@ -62,30 +78,33 @@ function OnAcceptRide() {
                   New ride request received!
                 </p>
                 <div className="space-y-2 flex flex-col items-center justify-center">
-                  <p className="font-bold text-black group-hover:text-white">
-                    {`User: ride?.status`}
+                  <p className="font-bold text-black group-hover:text-white capitalize">
+                  User: {ride[0].userId[0].fullname.firstname} {ride[0].userId[0].fullname.lastname}
+                  </p>
+                  <p className="font-bold text-black group-hover:text-white capitalize">
+                  Vehicle: {ride[0].vechileType}
                   </p>
                   <p className="font-bold text-black group-hover:text-white">
-                    {`Vechile: ride?.status`}
-                  </p>
-                  <p className="font-bold text-black group-hover:text-white">
-                    {`Pickup: ride?.pickup`}
+                  Pickup: {ride[0].pickup}
                   </p>
                   <p className="font-semibold group-hover:text-white">to</p>
                   <p className="font-bold text-black group-hover:text-white">
-                    {`Destination: ride?.destination`}
+                  Destination: {ride[0].destination}
                   </p>
                   <p className="font-bold text-black group-hover:text-white">
-                    {`Fare: ride?.fare`}
+                  Fare: {ride[0].fare}
                   </p>
                   <p className="font-bold text-black group-hover:text-white">
-                    {`Status: ride?.status`}
+                  Status: {ride[0].status}
                   </p>
                 </div>
                 <div className="p-1">
                   <form action="">
                     <div>
-                      <input type="text" placeholder="Enter OTP" className="p-2 rounded-xl bg-black text-white group-hover:bg-white group-hover:text-black"/>
+                      <input type="text" placeholder="Enter OTP" className="p-2 rounded-xl bg-black text-white group-hover:bg-white group-hover:text-black" value={otp} onChange={(e)=>{
+                        e.preventDefault()
+                        setOtp(e.target.value)
+                      }}/>
                     </div>
                   </form>
                 </div>

@@ -2,6 +2,7 @@ const maps = require("../services/maps.services");
 const { validationResult } = require("express-validator");
 
 module.exports.getcoordinates = async (req, res) => {
+    // This api is being used by the user
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ message: errors.array() });
@@ -37,10 +38,6 @@ module.exports.getsuggestions = async (req, res) => {
     if (!errors.isEmpty()) {
         return res.status(400).json({ message: errors.array() });
     }
-    // if(!req.query.input){
-    //     console.log("asjbkjdb")
-    //     return res.status(400).json({ message: "Input must be provided" });
-    // }
     const { input } = req.query;
     try {
         const suggestions = await maps.getautocomplete(input);

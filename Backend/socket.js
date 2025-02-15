@@ -41,7 +41,7 @@ function initializesocket(server){
 }
 function sndmessagetosocketid(socketId, messageObj){
     console.log(messageObj.data)
-    if(io){
+    if(io){ 
         console.log('in snd msg')
         console.log(socketId)
         console.log(messageObj.event, messageObj.data)

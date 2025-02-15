@@ -23,7 +23,7 @@ const UserLogin = () => {
     })
     setEmail('')
     setpassword('')
-    const expiretime = new Date().getTime() + 1*60*60*1000;
+    const expiretime = new Date().getTime() + 10*24*60*60*1000;
     setUser(res.data[0])
     localStorage.setItem('user',JSON.stringify({
       ...res.data[0],

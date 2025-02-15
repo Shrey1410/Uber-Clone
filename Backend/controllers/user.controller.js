@@ -3,6 +3,7 @@ const {validationResult} = require("express-validator")
 const bcrypt = require("bcrypt")
 const security_config = require("../configs/security.config")
 const jwt = require("jsonwebtoken")
+
 module.exports.register = async (req, res)=>{
     const errors = validationResult(req);
     if(!errors.isEmpty()){
@@ -33,12 +34,12 @@ module.exports.register = async (req, res)=>{
     }
     const token = jwt.sign({
         user_id : user._id
-    }, security_config.SECRETE_KEY, {expiresIn : '1h'})
+    }, security_config.SECRETE_KEY, {expiresIn : '10d'})
     const option = {
         httpOnly: true,
         secure: true,
         sameSite : 'None',
-        maxAge : 1*60*60*1000
+        maxAge : 10*24*60*60*1000
     };
     return res.cookie("token", token, option).status(200).send([{
         _id : user._id,
@@ -48,6 +49,7 @@ module.exports.register = async (req, res)=>{
         message : "User Registered successfully"
     }])
 }
+
 module.exports.login = async (req, res)=>{
     const errors = validationResult(req)
     if(!errors.isEmpty()){
@@ -75,12 +77,12 @@ module.exports.login = async (req, res)=>{
     }
     const token = jwt.sign({
         user_id : user._id
-    },security_config.SECRETE_KEY, {expiresIn : '30d'})
+    },security_config.SECRETE_KEY, {expiresIn : '10d'})
     const option = {
         httpOnly: true,
         secure: true,
         sameSite : 'None',
-        maxAge : 1*60*60*1000
+        maxAge : 10*24*60*60*1000
     };
     return res.cookie("token", token, option).status(200).send([{
         _id : user._id,
@@ -90,13 +92,9 @@ module.exports.login = async (req, res)=>{
         message : "User Logged In Successfully",
     }])
 }
+
 module.exports.logout = async (req, res)=>{
     return res.clearCookie("token").status(200).send({
         message : "User logged out successfully"
     })
-}
-module.exports.profile = async (req, res)=>{
-    return res.status(200).send(
-        {user : req.user}
-    )
 }

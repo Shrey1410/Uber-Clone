@@ -60,7 +60,7 @@ const captainSchema = new mongoose.Schema({
             type : Number
         }
     }
-});
+}, {timestamps : true,  __v :false});
 
 const Captain = mongoose.model('Captain', captainSchema);
 

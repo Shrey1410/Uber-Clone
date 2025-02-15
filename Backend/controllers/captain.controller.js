@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken")
 const bcrypt = require("bcrypt");
 const { SALT, SECRETE_KEY } = require("../configs/security.config");
 const { validationResult } = require("express-validator");
+
 module.exports.register = async (req, res)=>{
     const error = validationResult(req)
     if(!error.isEmpty()){
@@ -35,13 +36,13 @@ module.exports.register = async (req, res)=>{
     const token = jwt.sign({
         captain_id : captain._id
     }, SECRETE_KEY, {
-        expiresIn : '1h'
+        expiresIn : '10d'
     })
     const option = {
         httpOnly: true,
         secure: true,
         sameSite : 'None',
-        maxAge : 1*60*60*1000
+        maxAge : 10*24*60*60*1000
     };
     return res.cookie("token", token, option).status(200).send([{
         _id : captain._id,
@@ -79,13 +80,13 @@ module.exports.login = async (req, res)=>{
     const token = jwt.sign({
         captain_id : captain._id
     }, SECRETE_KEY, {
-        expiresIn : '1h'
+        expiresIn : '10d'
     })
     const option = {
         httpOnly: true,
         secure: true,
         sameSite : 'None',
-        maxAge : 1*60*60*1000
+        maxAge : 10*24*60*60*1000
     };
     return res.cookie("token", token, option).status(200).send([{
         _id : captain._id,
@@ -100,17 +101,5 @@ module.exports.login = async (req, res)=>{
 module.exports.logout = (req, res)=>{
     res.clearCookie("token").status(200).send({
         message : "captain logged out successfully"
-    })
-}
-
-module.exports.getprofile = async (req, res)=>{
-    const captain = await captain_model.findOne(req.captain._id)
-    if(!captain){
-        return res.status(400).send({
-            message : "captain not found"
-        })
-    }
-    return res.status(200).send({
-        captain : captain
     })
 }

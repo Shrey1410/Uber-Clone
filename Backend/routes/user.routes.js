@@ -7,6 +7,4 @@ module.exports = (app)=>{
     app.post('/user/login', [body('email').isEmail().withMessage('Invalid Email'),body('password').isLength({min : 8}).withMessage('Password must be of atleast length 8')], user_controllers.login)
 
     app.post('/user/logout', [auth_middleware.checkuserlogin], user_controllers.logout)
-
-    app.get('/user/profile', [auth_middleware.checkuserlogin], user_controllers.profile)
 }

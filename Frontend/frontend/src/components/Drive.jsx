@@ -7,30 +7,31 @@ const Drive = () => {
   const {captain} = useContext(CaptainDataContext)
   const Navigate = useNavigate()
   const {socket} = useContext(SocketContext)
+  
   useEffect(() => {
     if (!captain) {
       Navigate('/');
-    }
-    else{
-      console.log("entered")
-      socket.emit("join", {userType : "captain", userId : captain._id})
-      const updateLocation = () =>{
-        if(navigator.geolocation){
-          navigator.geolocation.getCurrentPosition(position =>{
+    } else {
+      socket.emit("join", { userType: "captain", userId: captain._id });
+      const updateLocation = () => {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(position => {
             socket.emit('update-location-captain', {
               userId: captain._id,
               location: {
                 ltd: position.coords.latitude,
                 lng: position.coords.longitude
               }
-            })
-          })
+            });
+          });
         }
-      }
-      const locationInterval = setInterval(updateLocation, 10000)
-      updateLocation()
+      };
+      updateLocation(); // Initial update
+      const locationInterval = setInterval(updateLocation, 10000);
+      return () => clearInterval(locationInterval); // Cleanup on unmount or captain change
     }
-    }, [captain]);
+  }, [captain]); 
+  
   return (
     <div>
       <div className='h-screen flex flex-col overflow-hidden'>

@@ -12,7 +12,8 @@ import { ToastContainer } from 'react-toastify'
 import Ridepopup from './components/Ridepopup'
 import OnAcceptRide from './components/OnAcceptRide'
 import OnStartRide from './components/OnStartRide'
-import OnConfirmRide from './components/OnConfirmRide'
+import OnDriver from './components/OnDriver'
+
 const App = () => {
   return (
     <div>
@@ -29,7 +30,7 @@ const App = () => {
         <Route path='/ridepopup' element={<Ridepopup/>}></Route>
         <Route path='/onacceptride' element={<OnAcceptRide/>}></Route>
         <Route path='/startride' element={<OnStartRide/>}></Route>
-        <Route path='/onconfirmride' element={<OnConfirmRide/>}></Route>
+        <Route path='/ongetting-driver' element={<OnDriver/>}></Route>
       </Routes>
     </div>
   )
